@@ -1,0 +1,13 @@
+# Runtime asset requests seen from the live client that are not named directly
+# in the current CKS catalogs. The bulk dumper includes these on fresh runs.
+bo17_salmon_pack_lrg@4x.png
+bottom_collect_medals@4x.png
+bottom_medals@4x.png
+event_exclusive_badge_halloween@4x.png
+cloud_v002@4x.astc.ccz
+facespace_portrait_romanreigns_default_30972@4x.png
+fg_basic_burst@4x.png
+fg_modal_buildinginfo_skin_cell_v4.json
+fg_progression_tab_menu_v3.json
+rocky_w2_precision_punching_thumb1@4x.png
+stPatrickCloseBg@4x.png

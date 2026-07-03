@@ -1,0 +1,7 @@
+{
+  "server_port": 6767,
+  "proxy_port": 6769,
+  "use_shared_save": true,
+  "shared_save_pid": "0",
+  "lazy_fetch": true
+}

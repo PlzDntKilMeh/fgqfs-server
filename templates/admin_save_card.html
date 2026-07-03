@@ -1,0 +1,25 @@
+<section class="save-card">
+  <div class="save-card-head">
+    <div>
+      <p class="label">Player ID</p>
+      <h2>{{player_id}}</h2>
+    </div>
+    <a class="button secondary" href="/admin/download/current/{{player_id_url}}">Download current</a>
+  </div>
+  <dl class="save-meta">
+    <div><dt>Email</dt><dd>{{email}}</dd></div>
+    <div><dt>Current bytes</dt><dd>{{save_bytes}}</dd></div>
+    <div><dt>Revisions</dt><dd>{{revision_count}}</dd></div>
+    <div><dt>Updated</dt><dd>{{updated_at}}</dd></div>
+    <div><dt>Last seen</dt><dd>{{last_seen}}</dd></div>
+  </dl>
+  {{revision_note_html}}
+  <div class="revision-scroll">
+    <table>
+      <thead>
+        <tr><th>Rev</th><th>Source</th><th>Bytes</th><th>Created</th><th>Note</th><th>Action</th></tr>
+      </thead>
+      <tbody>{{revision_rows}}</tbody>
+    </table>
+  </div>
+</section>

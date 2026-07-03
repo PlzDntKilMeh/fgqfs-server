@@ -1,0 +1,16 @@
+<tr>
+  <td>{{revision_id}}</td>
+  <td>{{source}}</td>
+  <td>{{save_bytes}}</td>
+  <td>{{created_at}}</td>
+  <td>{{note}}</td>
+  <td class="row-actions">
+    <button
+      type="button"
+      class="link-button js-activate-revision"
+      data-revision-id="{{revision_id}}"
+      data-target-player-id="{{target_player_id}}"
+    >Make active</button>
+    <a href="/admin/download/revision/{{revision_id}}">Download</a>
+  </td>
+</tr>

@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FGQFS Admin</title>
+  <link rel="stylesheet" href="/admin/static/admin.css">
+  <script defer src="/admin/static/admin.js"></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">FGQFS Admin</p>
+        <h1>Save Control</h1>
+        <p class="lede">
+          Gameplay slot <strong>{{shared_pid}}</strong>. Saves create compressed DB revisions instead of replacing history.
+        </p>
+      </div>
+      <nav class="quick-links" aria-label="Admin shortcuts">
+        <a href="/admin/download/current/{{shared_pid_url}}">Download active save</a>
+        <a href="/cert">Proxy certificate</a>
+        <a href="/debug/db">Debug JSON</a>
+      </nav>
+    </header>
+
+    {{notice_html}}
+
+    <section class="action-grid" aria-label="Admin actions">
+      <article class="panel">
+        <p class="label">Official Server</p>
+        <h2>Download Live Save</h2>
+        <div class="form-stack">
+          <label>
+            Email
+            <input id="live-email" type="text" autocomplete="username" placeholder="you@example.com">
+          </label>
+          <label>
+            Password
+            <input id="live-password" type="password" autocomplete="current-password" placeholder="password">
+          </label>
+          <label>
+            Target Slot
+            <input id="live-target" type="text" value="{{shared_pid}}">
+          </label>
+          <button id="live-download-button" class="button" type="button">Download and activate</button>
+        </div>
+      </article>
+
+      <article class="panel">
+        <p class="label">Local File</p>
+        <h2>Upload Save</h2>
+        <form class="form-stack" action="/admin/upload-save" method="post" enctype="multipart/form-data">
+          <label>
+            Save File
+            <input name="save_file" type="file" accept=".pbuf" required>
+          </label>
+          <label>
+            Target
+            <select name="target_mode">
+              <option value="shared">Shared slot {{shared_pid}}</option>
+              <option value="new">Create new slot</option>
+              <option value="specific">Specific player_id</option>
+            </select>
+          </label>
+          <label>
+            Specific player_id
+            <input name="specific_player_id" type="text" placeholder="only used when Target = Specific">
+          </label>
+          <label>
+            Note
+            <textarea name="note" rows="3" placeholder="optional source / description"></textarea>
+          </label>
+          <label class="checkbox-row">
+            <input name="make_active" type="checkbox" value="1" checked>
+            <span>Make active in gameplay slot after upload</span>
+          </label>
+          <button class="button" type="submit">Upload save</button>
+        </form>
+      </article>
+
+      <article class="panel compact">
+        <p class="label">Current Slot</p>
+        <h2>{{shared_pid}}</h2>
+        <p>Use this slot for normal gameplay. Restores and uploads keep older revisions available below.</p>
+        <div class="stacked-links">
+          <a href="/admin/download/current/{{shared_pid_url}}">Download current active save</a>
+          <a href="/cert">Download proxy certificate</a>
+          <a href="/debug/db">View DB counts</a>
+        </div>
+      </article>
+    </section>
+
+    <section class="saves">
+      <div class="section-head">
+        <div>
+          <p class="label">Stored Saves</p>
+          <h2>Revision History</h2>
+        </div>
+        <p class="muted">Each save card has its own scrollable revision list.</p>
+      </div>
+      <div class="save-list">
+        {{save_cards}}
+      </div>
+    </section>
+  </main>
+</body>
+</html>
