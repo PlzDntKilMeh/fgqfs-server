@@ -115,7 +115,7 @@ content\cdn_assets\files\
 ## Related Tools
 
 - LTA viewer: https://plzdntkilmeh.github.io/lta-viwer
-- FGQFS shop: https://fgqfs-shop.pages.dev/
+- Save Editor: https://fgqfs-shop.pages.dev/
 
 ## Settings
 
