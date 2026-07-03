@@ -68,8 +68,6 @@ Do not expose the server/admin port to the internet.
 
 ## Get A Save From A Phone
 
-For email accounts, the proxy can usually be enabled before opening the game.
-
 For Facebook/OAuth accounts:
 
 1. Log in without the proxy.
