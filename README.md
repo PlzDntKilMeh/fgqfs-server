@@ -90,11 +90,12 @@ That imports the newest captured save into shared gameplay slot `0`.
 download_live_save.bat --email you@example.com --password yourpass --activate
 ```
 
-This downloads the official server save and activates it into the shared gameplay slot.
+This downloads the official server save and activates it into the shared gameplay slot. If the game ever shuts down saves will not be accessible anymore.
 
 ## Assets
 
-The repo does not include CDN assets. To populate local catalogs/assets:
+The repo does not include CDN assets. If the game ever shuts down these will not be accessible anymore so people should archive them 
+To populate local catalogs/assets:
 
 ```bat
 download_assets.bat
