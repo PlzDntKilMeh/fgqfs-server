@@ -90,7 +90,7 @@ That imports the newest captured save into shared gameplay slot `0`.
 download_live_save.bat --email you@example.com --password yourpass --activate
 ```
 
-This downloads the official server save and activates it into the shared gameplay slot. If the game ever shuts down saves will not be accessible anymore.
+This downloads the official server save and activates it into the shared gameplay slot.
 
 ## Assets
 
