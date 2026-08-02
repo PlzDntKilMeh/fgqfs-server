@@ -188,16 +188,23 @@ def _cert_response(filename: str = "mitmproxy-ca-cert.cer") -> http.Response:
     )
 
 
-def _cert_index_response() -> http.Response:
+def _cert_index_response(show_all: bool = False) -> http.Response:
     cert_dir = _cert_dir()
     files = []
     if cert_dir.is_dir():
         files = [p.name for p in sorted(cert_dir.iterdir()) if p.is_file() and p.name in _CERT_FILENAMES]
 
-    links = "\n".join(
-        f'<li><a href="/certs/{name}">{name}</a></li>'
-        for name in files
-    ) or "<li>No certificate files found yet.</li>"
+    advanced = ""
+    if show_all:
+        links = "\n".join(
+            f'<li><a href="/certs/{name}">{name}</a></li>'
+            for name in files
+        ) or "<li>No certificate files found yet.</li>"
+        advanced = f"""
+  <h2>Advanced Files</h2>
+  <ul>{links}</ul>
+"""
+
     body = f"""<!doctype html>
 <html>
 <head>
@@ -211,10 +218,10 @@ def _cert_index_response() -> http.Response:
 </head>
 <body>
   <h1>FGQFS Proxy Certificate</h1>
-  <p>Install <a href="/cert"><code>mitmproxy-ca-cert.cer</code></a> on the phone, then set the phone's manual proxy to this PC on this same port.</p>
+  <p><a href="/cert"><strong>Download proxy certificate</strong></a></p>
+  <p>Install and trust this certificate on the phone, then set the phone's manual proxy to this PC on this same port.</p>
   <p>The Python server is not required for this certificate page.</p>
-  <h2>Available files</h2>
-  <ul>{links}</ul>
+  {advanced}
 </body>
 </html>
 """
@@ -231,7 +238,7 @@ def _maybe_serve_cert_portal(flow: http.HTTPFlow) -> bool:
         flow.response = _cert_response("mitmproxy-ca-cert.cer")
         return True
     if path == "/certs" or path == "/certs/":
-        flow.response = _cert_index_response()
+        flow.response = _cert_index_response(show_all=True)
         return True
     if path.startswith("/certs/"):
         flow.response = _cert_response(path.rsplit("/", 1)[-1])

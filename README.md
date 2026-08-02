@@ -12,9 +12,9 @@ setup_env.bat
 
 This creates a repo-local `.venv` and installs the needed packages.
 
-## APK Proxy Patch
+## Android APK Proxy Patch
 
-The APK must trust the user-installed proxy certificate. This is the only APK change needed for the proxy setup.
+Android APKs usually do not trust user-installed certificates by default. Patch the APK so it trusts the proxy certificate. This is Android-only; iPhone does not need an app mod for this setup.
 
 Use APK Easy Tool to decompile the APK, then run:
 
@@ -41,27 +41,44 @@ Keep both server windows open. If Windows asks, allow Python and mitmproxy throu
 
 ## Install Cert On Phone
 
-The phone and PC must be on the same network. While the proxy is running, open this on the phone:
+The phone and PC must be on the same Wi-Fi network. While the proxy is running, open this on the phone:
 
 ```text
 http://YOUR_PC_IP:6769/
 ```
 
-Tap the certificate link on that setup page, or open the direct certificate URL:
+Tap **Download proxy certificate**. The direct URL is:
 
 ```text
 http://YOUR_PC_IP:6769/cert
 ```
 
-Install the certificate, then set the phone's manual HTTP proxy:
+The certificate page is served by mitmproxy on port `6769`, so the Python server on port `6767` does not need to be running just to install the certificate.
 
-- host: your PC LAN IP
-- port: `6769`
+### iPhone
 
-The certificate is served by mitmproxy itself, so the Python server on port `6767` does not need to be running just to install the certificate. If the full server is running, the old URL also works:
+1. Download the certificate from `http://YOUR_PC_IP:6769/`.
+2. Go to `Settings > General > VPN & Device Management` and install the downloaded profile.
+3. Go to `Settings > General > About > Certificate Trust Settings`.
+4. Enable full trust for the mitmproxy certificate.
+5. Go to `Settings > Wi-Fi`, tap the info button for your network, and set **HTTP Proxy** to **Manual**:
 
 ```text
-http://YOUR_PC_IP:6767/cert
+Server: YOUR_PC_IP
+Port: 6769
+Authentication: Off
+```
+
+### Android
+
+1. Use the patched APK from the Android APK Proxy Patch section.
+2. Download the certificate from `http://YOUR_PC_IP:6769/`.
+3. Install it as a user CA certificate in Android settings.
+4. In your Wi-Fi network settings, set the manual proxy:
+
+```text
+Proxy hostname: YOUR_PC_IP
+Proxy port: 6769
 ```
 
 ## Use The Server
