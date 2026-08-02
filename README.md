@@ -112,12 +112,6 @@ Bulk-downloaded files go to:
 ```text
 content\cdn_assets\files\
 ```
-
-## Related Tools
-
-- LTA viewer: https://plzdntkilmeh.github.io/lta-viewer
-- Save Editor: https://fgqfs-shop.pages.dev/
-
 ## Settings
 
 Default settings live in `server_settings.json`.
@@ -133,5 +127,9 @@ Common settings:
   "lazy_fetch": true
 }
 ```
+## Related Tools
+
+- LTA viewer: https://plzdntkilmeh.github.io/lta-viewer
+- Save Editor: https://fgqfs-shop.pages.dev/
 
 Generated databases, captures, certs, logs, and CDN downloads are intentionally ignored by git.
