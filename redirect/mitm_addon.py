@@ -37,6 +37,7 @@ import json
 import os
 import time
 import urllib.parse
+import ipaddress
 from pathlib import Path
 from typing import Any
 
@@ -98,6 +99,14 @@ _OFFLINE_PASSTHROUGH: set[str] = {
 _log_path: Path = Path("captures/live/traffic.jsonl")
 _log_file = None
 
+_CERT_FILENAMES = {
+    "mitmproxy-ca-cert.cer",
+    "mitmproxy-ca-cert.pem",
+    "mitmproxy-ca-cert.p12",
+    "mitmproxy-ca.pem",
+    "mitmproxy-ca.p12",
+}
+
 
 # ---------------------------------------------------------------------------
 # Addon lifecycle
@@ -134,6 +143,105 @@ def _write(record: dict) -> None:
         _log_file.flush()
 
 
+def _cert_dir() -> Path:
+    return Path(getattr(ctx.options, "confdir", "mitmproxy"))
+
+
+def _is_private_or_local_host(host: str) -> bool:
+    if host in {"localhost", "127.0.0.1", PRIVATE_HOST, os.environ.get("FGQFS_EXTERNAL_HOST", "")}:
+        return True
+    try:
+        return ipaddress.ip_address(host).is_private
+    except ValueError:
+        return False
+
+
+def _cert_response(filename: str = "mitmproxy-ca-cert.cer") -> http.Response:
+    safe_name = Path(filename).name
+    if safe_name not in _CERT_FILENAMES:
+        return http.Response.make(404, b"Unknown certificate file\n", {"Content-Type": "text/plain"})
+
+    path = _cert_dir() / safe_name
+    if not path.is_file():
+        message = (
+            f"Certificate not found: {safe_name}\n"
+            f"Expected path: {path.resolve()}\n"
+            "Leave this proxy running long enough for mitmproxy to create its CA, then refresh.\n"
+        )
+        return http.Response.make(404, message.encode("utf-8"), {"Content-Type": "text/plain"})
+
+    if path.suffix.lower() in {".cer", ".pem"}:
+        media_type = "application/x-x509-ca-cert"
+    elif path.suffix.lower() == ".p12":
+        media_type = "application/x-pkcs12"
+    else:
+        media_type = "application/octet-stream"
+
+    return http.Response.make(
+        200,
+        path.read_bytes(),
+        {
+            "Content-Type": media_type,
+            "Content-Disposition": f'attachment; filename="{safe_name}"',
+            "Cache-Control": "no-store",
+        },
+    )
+
+
+def _cert_index_response() -> http.Response:
+    cert_dir = _cert_dir()
+    files = []
+    if cert_dir.is_dir():
+        files = [p.name for p in sorted(cert_dir.iterdir()) if p.is_file() and p.name in _CERT_FILENAMES]
+
+    links = "\n".join(
+        f'<li><a href="/certs/{name}">{name}</a></li>'
+        for name in files
+    ) or "<li>No certificate files found yet.</li>"
+    body = f"""<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FGQFS Proxy Certificate</title>
+  <style>
+    body {{ font-family: system-ui, sans-serif; max-width: 720px; margin: 32px auto; padding: 0 16px; line-height: 1.45; }}
+    code {{ background: #f1f1f1; padding: 2px 5px; border-radius: 4px; }}
+  </style>
+</head>
+<body>
+  <h1>FGQFS Proxy Certificate</h1>
+  <p>Install <a href="/cert"><code>mitmproxy-ca-cert.cer</code></a> on the phone, then set the phone's manual proxy to this PC on this same port.</p>
+  <p>The Python server is not required for this certificate page.</p>
+  <h2>Available files</h2>
+  <ul>{links}</ul>
+</body>
+</html>
+"""
+    return http.Response.make(200, body.encode("utf-8"), {"Content-Type": "text/html; charset=utf-8"})
+
+
+def _maybe_serve_cert_portal(flow: http.HTTPFlow) -> bool:
+    if flow.request.method not in {"GET", "HEAD"}:
+        return False
+
+    path = urllib.parse.urlsplit(flow.request.path).path
+    host = flow.request.pretty_host
+    if path in {"/cert", "/cert.cer"}:
+        flow.response = _cert_response("mitmproxy-ca-cert.cer")
+        return True
+    if path == "/certs" or path == "/certs/":
+        flow.response = _cert_index_response()
+        return True
+    if path.startswith("/certs/"):
+        flow.response = _cert_response(path.rsplit("/", 1)[-1])
+        return True
+    if path == "/" and _is_private_or_local_host(host):
+        flow.response = _cert_index_response()
+        return True
+    return False
+
+
 # ---------------------------------------------------------------------------
 # Body parsers
 # ---------------------------------------------------------------------------
@@ -164,6 +272,9 @@ def _parse_tapservice_body(raw: bytes) -> dict[str, Any] | None:
 # ---------------------------------------------------------------------------
 
 def request(flow: http.HTTPFlow) -> None:
+    if _maybe_serve_cert_portal(flow):
+        return
+
     host = flow.request.pretty_host
     is_fg = host in ALL_FG_HOSTS
 

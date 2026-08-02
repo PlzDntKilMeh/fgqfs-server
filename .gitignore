@@ -43,3 +43,4 @@ content/bootstrap/*
 
 dist/
 build/
+LOCAL_NETWORK_REDIRECT_NOTES.md

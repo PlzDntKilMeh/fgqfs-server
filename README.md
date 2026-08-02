@@ -34,23 +34,35 @@ start_server_and_proxy.bat
 
 Default ports:
 
-- server/admin/cert: `6767`
+- server/admin/API: `6767`
 - phone proxy: `6769`
 
-Keep both server windows open. If Windows asks, allow Python/mitmproxy through the firewall. The startup window prints your PC LAN IP and the cert URL.
+Keep both server windows open. If Windows asks, allow Python and mitmproxy through the firewall. The startup window prints your PC LAN IP and the cert URL.
 
 ## Install Cert On Phone
 
-The phone and PC must be on the same network. While the server is running, open this on the phone:
+The phone and PC must be on the same network. While the proxy is running, open this on the phone:
 
 ```text
-http://YOUR_PC_IP:6767/cert
+http://YOUR_PC_IP:6769/
+```
+
+Tap the certificate link on that setup page, or open the direct certificate URL:
+
+```text
+http://YOUR_PC_IP:6769/cert
 ```
 
 Install the certificate, then set the phone's manual HTTP proxy:
 
 - host: your PC LAN IP
 - port: `6769`
+
+The certificate is served by mitmproxy itself, so the Python server on port `6767` does not need to be running just to install the certificate. If the full server is running, the old URL also works:
+
+```text
+http://YOUR_PC_IP:6767/cert
+```
 
 ## Use The Server
 
@@ -73,16 +85,18 @@ For Facebook/OAuth accounts:
 1. Log in without the proxy.
 2. Close the game.
 3. Run `start_live_capture_proxy.bat`.
-4. Enable the phone proxy to your PC on port `6769`.
-5. Reopen the game and let the town load.
-6. Close the game.
-7. Run:
+4. If the proxy certificate is not installed yet, open `http://YOUR_PC_IP:6769/` on the phone and install it.
+5. Enable the phone proxy to your PC on port `6769`.
+6. Reopen the game and let the town load.
+7. Close the game.
+8. Run:
 
 ```bat
 import_live_save.bat
 ```
 
 That imports the newest captured save into shared gameplay slot `0`.
+The importer chooses the newest save-bearing record in `captures\live\traffic.jsonl`, whether it came from a client `saveV3` request or a server `getGameStatePB` response.
 
 ## Download A Live Email Save
 

@@ -17,13 +17,13 @@ if not exist "%SAVE_DIR%" mkdir "%SAVE_DIR%"
 
 echo Exporting latest live save from %TRAFFIC_LOG%...
 if exist "%VENV_PY%" (
-    "%VENV_PY%" tools\export_live_save.py --in "%TRAFFIC_LOG%" --out-dir "%SAVE_DIR%" || exit /b 1
+    "%VENV_PY%" tools\export_live_save.py --in "%TRAFFIC_LOG%" --out-dir "%SAVE_DIR%" %* || exit /b 1
 ) else (
     py --version >nul 2>&1
     if not errorlevel 1 (
-        py tools\export_live_save.py --in "%TRAFFIC_LOG%" --out-dir "%SAVE_DIR%" || exit /b 1
+        py tools\export_live_save.py --in "%TRAFFIC_LOG%" --out-dir "%SAVE_DIR%" %* || exit /b 1
     ) else (
-        python tools\export_live_save.py --in "%TRAFFIC_LOG%" --out-dir "%SAVE_DIR%" || exit /b 1
+        python tools\export_live_save.py --in "%TRAFFIC_LOG%" --out-dir "%SAVE_DIR%" %* || exit /b 1
     )
 )
 
@@ -48,3 +48,4 @@ echo.
 echo Done. Shared private save slot updated from %TRAFFIC_LOG%.
 echo Exported save files are in %SAVE_DIR%.
 endlocal
+pause

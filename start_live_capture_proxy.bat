@@ -28,7 +28,8 @@ echo Live game traffic will pass through and be logged to:
 echo   %FGQFS_TRAFFIC_LOG%
 echo Exported saves will be written under:
 echo   %SAVE_DIR%
-echo Cert: http://%FGQFS_EXTERNAL_HOST%:%SERVER_PORT%/cert
+echo Cert/setup page: http://%FGQFS_EXTERNAL_HOST%:%PROXY_PORT%/
+echo Direct cert URL: http://%FGQFS_EXTERNAL_HOST%:%PROXY_PORT%/cert
 echo.
 
 if exist "%VENV_MITMDUMP%" (

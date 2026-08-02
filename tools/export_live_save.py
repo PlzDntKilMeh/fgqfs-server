@@ -83,7 +83,7 @@ def _response_save_candidate(record: dict[str, Any], current_id: str) -> dict[st
     }
 
 
-def extract_latest_candidates(log_path: Path) -> dict[str, dict[str, Any]]:
+def extract_latest_candidates(log_path: Path, player_id_filter: str = "") -> dict[str, dict[str, Any]]:
     current_id = ""
     latest: dict[str, dict[str, Any]] = {}
     with log_path.open("r", encoding="utf-8") as fh:
@@ -96,15 +96,18 @@ def extract_latest_candidates(log_path: Path) -> dict[str, dict[str, Any]]:
             if record.get("direction") == "request":
                 candidate = _request_save_candidate(record, current_id)
                 if candidate:
-                    latest["request"] = candidate
+                    if not player_id_filter or candidate["player_id"] == _safe_id(player_id_filter):
+                        latest["request"] = candidate
                     current_id = candidate["player_id"] or current_id
             elif record.get("direction") == "response":
                 candidate = _response_save_candidate(record, current_id)
                 if candidate:
-                    latest["response"] = candidate
+                    if not player_id_filter or candidate["player_id"] == _safe_id(player_id_filter):
+                        latest["response"] = candidate
                     current_id = candidate["player_id"] or current_id
     if not latest:
-        raise SystemExit(f"No live save found in {log_path}")
+        suffix = f" for player_id={player_id_filter}" if player_id_filter else ""
+        raise SystemExit(f"No live save found in {log_path}{suffix}")
     return latest
 
 
@@ -128,7 +131,7 @@ def write_exports(candidates: dict[str, dict[str, Any]], output_dir: Path, prefe
         }
 
     if preferred == "auto":
-        preferred = "response" if "response" in candidates else "request"
+        preferred = max(candidates, key=lambda source: float(candidates[source].get("ts") or 0))
     if preferred not in candidates:
         raise SystemExit(f"Requested source '{preferred}' not found in capture")
 
@@ -140,6 +143,7 @@ def write_exports(candidates: dict[str, dict[str, Any]], output_dir: Path, prefe
         "latest_source": preferred,
         "latest_player_id": latest["player_id"],
         "latest_rpc": latest["rpc"],
+        "latest_ts": latest["ts"],
         "latest_output_path": latest_path.name,
         "captures": written,
     }
@@ -171,13 +175,18 @@ def main() -> None:
         default="auto",
         help="Choose request saveV3 export, response getGameStatePB export, or auto",
     )
+    parser.add_argument(
+        "--player-id",
+        default="",
+        help="Only consider saves captured for this player_id",
+    )
     args = parser.parse_args()
 
     log_path = Path(args.input_path)
     if not log_path.is_file():
         raise SystemExit(f"Traffic log not found: {log_path}")
 
-    candidates = extract_latest_candidates(log_path)
+    candidates = extract_latest_candidates(log_path, args.player_id)
     latest_path = write_exports(candidates, Path(args.output_dir), args.source)
     meta = json.loads((Path(args.output_dir) / "latest_live_save.json").read_text(encoding="utf-8"))
 

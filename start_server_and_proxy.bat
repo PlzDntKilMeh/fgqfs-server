@@ -33,7 +33,9 @@ echo Started:
 echo   Server: http://%SERVER_HOST%:%SERVER_PORT%
 echo   Proxy : localhost:%PROXY_PORT%
 echo   Device ConfigURL host: %FGQFS_PUBLIC_HOST%
-echo   Cert  : http://%FGQFS_EXTERNAL_HOST%:%SERVER_PORT%/cert
+echo   Cert  : http://%FGQFS_EXTERNAL_HOST%:%PROXY_PORT%/cert
+echo   Admin cert URL also works while the server is running:
+echo           http://%FGQFS_EXTERNAL_HOST%:%SERVER_PORT%/cert
 echo.
 echo Set the device manual proxy to this PC's LAN IP on port %PROXY_PORT%.
 
