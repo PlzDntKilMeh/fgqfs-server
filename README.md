@@ -24,21 +24,6 @@ patch_apk_proxy.bat
 
 Enter the decompiled APK folder path when asked. If it says the patch succeeded, recompile the APK with APK Easy Tool, sign it, and install it on the phone.
 
-## Start Server
-
-Run:
-
-```bat
-start_server_and_proxy.bat
-```
-
-Default ports:
-
-- server/admin/API: `6767`
-- phone proxy: `6769`
-
-Keep both server windows open. If Windows asks, allow Python and mitmproxy through the firewall. The startup window prints your PC LAN IP and the cert URL.
-
 ## Install Cert On Phone
 
 The phone and PC must be on the same Wi-Fi network. While the proxy is running, open this on the phone:
@@ -80,20 +65,6 @@ Authentication: Off
 Proxy hostname: YOUR_PC_IP
 Proxy port: 6769
 ```
-
-## Use The Server
-
-Open the game with the phone proxy enabled.
-
-Admin dashboard:
-
-```text
-http://YOUR_PC_IP:6767/admin
-```
-
-The admin dashboard can upload saves, download the active save, restore older revisions, and download a live save with an email account.
-
-Do not expose the server/admin port to the internet.
 
 ## Get A Save From A Phone
 
@@ -143,6 +114,35 @@ Bulk-downloaded files go to:
 ```text
 content\cdn_assets\files\
 ```
+## Start Server
+
+Run:
+
+```bat
+start_server_and_proxy.bat
+```
+
+Default ports:
+
+- server/admin/API: `6767`
+- phone proxy: `6769`
+
+Keep both server windows open. If Windows asks, allow Python and mitmproxy through the firewall. The startup window prints your PC LAN IP and the cert URL.
+
+## Use The Server
+
+Open the game with the phone proxy enabled.
+
+Admin dashboard:
+
+```text
+http://YOUR_PC_IP:6767/admin
+```
+
+The admin dashboard can upload saves, download the active save, restore older revisions, and download a live save with an email account.
+
+Do not expose the server/admin port to the internet.
+
 ## Settings
 
 Default settings live in `server_settings.json`.
