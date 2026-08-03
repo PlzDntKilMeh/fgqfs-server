@@ -26,19 +26,11 @@ Enter the decompiled APK folder path when asked. If it says the patch succeeded,
 
 ## Install Cert On Phone
 
-The phone and PC must be on the same Wi-Fi network. While the proxy is running, open this on the phone:
+The phone and PC must be on the same Wi-Fi network. While the proxy server is running, open this on the phone:
 
 ```text
 http://YOUR_PC_IP:6769/
 ```
-
-Tap **Download proxy certificate**. The direct URL is:
-
-```text
-http://YOUR_PC_IP:6769/cert
-```
-
-The certificate page is served by mitmproxy on port `6769`, so the Python server on port `6767` does not need to be running just to install the certificate.
 
 ### iPhone
 
@@ -78,13 +70,13 @@ For Facebook/OAuth accounts:
 6. Reopen the game and let the town load.
 7. Close the game.
 8. Run:
-
 ```bat
 import_live_save.bat
 ```
 
 That imports the newest captured save into shared gameplay slot `0`.
 The importer chooses the newest save-bearing record in `captures\live\traffic.jsonl`, whether it came from a client `saveV3` request or a server `getGameStatePB` response.
+
 
 ## Download A Live Email Save
 
@@ -142,6 +134,7 @@ http://YOUR_PC_IP:6767/admin
 The admin dashboard can upload saves, download the active save, restore older revisions, and download a live save with an email account.
 
 Do not expose the server/admin port to the internet.
+
 
 ## Settings
 
